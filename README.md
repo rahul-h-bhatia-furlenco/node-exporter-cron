@@ -5,10 +5,8 @@ This project demonstrates how to create a Kubernetes cron job that pulls node me
 ## Table of Contents
 - [Problem Statement](#problem-statement)
 - [Expected Output](#expected-output)
-- [Project Structure](#project-structure)
 - [Setup](#setup)
 - [Usage](#usage)
-- [Demo](#demo)
 - [Assumptions](#assumptions)
 - [Future Improvements](#future-improvements)
 - [Contributing](#contributing)
@@ -24,16 +22,15 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
 2. Dockerfile to containerize the code.
 3. Kubernetes YAML or Helm Chart.
 4. README file explaining the design, deployment, and other details.
-5. Optionally, a short demo video showcasing the output with code files.
 
-## Project Structure
+
 
 ## Setup
 
 1. Clone this repository:
 
     ```bash
-    git clone https://github.com/your-username/kubernetes-cron-job.git
+    git clone https://github.com/rahul-h-bhatia-furlenco/node-exporter-cron.git
     ```
 
 2. Navigate to the project directory:
@@ -46,35 +43,60 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
 
 ## Usage
 
+# To just deploy into your cluster:
+   You can follow below steps 3-5
+
+# To build from Scratch
+   Follow steps from 1-5
+
 1. Build the Docker image:
 
     ```bash
-    docker build -t metrics-collector .
+    docker build -t node-exporter-linux-1 .
     ```
-
-2. Deploy the Kubernetes cron job:
+2. Tag and Push is to Docker Hub Repository:
 
     ```bash
-    kubectl apply -f cronjob.yaml
+    docker tag node-exporter-linux-1 rahulbhatia1998/node-exporter-linux-1
+    docker push rahulbhatia1998/node-exporter-linux-1
+    ```
+    You can add your own username here, I have used mine rahulbhatia1998
+
+
+3. Deploy the Storage Class Template:
+
+    ```bash
+    kubectl apply -f storage-class.yml
     ```
 
-## Demo
+4. Deploy the PVC Template for local storage:
 
-[![Watch the demo](demo-thumbnail.png)](demo-video.mp4)
+    ```bash
+    kubectl apply -f storage-pvc.yml
+    ```
 
-[Watch Demo Video](demo-video.mp4)
+5. Deploy the Kubernetes cron job:
+
+    ```bash
+    kubectl apply -f cronjob.yml
+    ```
+
+
 
 ## Assumptions
 
 1. Node exporter is used to collect node metrics.
 2. Local Kubernetes setup like Minikube or Kind is being used.
-3. Generated output files are considered essential and retained on pod restarts.
+3. Generated output files are considered essential and retained on pod restarts
+4. Have setup PVC along with Storage class as local Host Storage, the mainifests files are present in kubernetes-cron-job/ directory.
 
 ## Future Improvements
 
-- Implement support for customizing metrics collection frequency.
-- Add support for other cloud platforms' Kubernetes flavors.
+- Can store metrics in the future in an Object Storage like S3 bucket, if moving to an AWS EKS based system. https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html S3 CSI driver can be installed in the EKS cluster
+- Also Conenct with an NFS driver if multiple host machines are there like EFS on AWS
 - Enhance error handling and logging in the metrics collector script.
+- In case of Multiple Worker nodes, the cron job pod can be deployed on multiple worker nodes based on kubernetes Scheduler, for this we can add taint on one Worker node and add tolerant on cronjob, so that it always gets deployed on that particular node.
+
 
 ## Contributing
 
