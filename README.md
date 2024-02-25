@@ -39,9 +39,20 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
     cd kubernetes-cron-job
     ```
 
-3. Customize the cron schedule in `cronjob.yaml` if needed.
+3. Customize the cron schedule in `cronjob.yml` if needed.
 
 ## Usage
+
+# Pre-Requisite
+   Adding Node Exporter to the Kubernetes Cluster. Only if you have a fresh cluster, and there is no node-exporter installed. 
+   These commands will install node-exporter on every node and expose it as a cluster IP service (internal to the kubernetes cluster).
+
+    ```bash
+    kubectl apply -f node-exporter-daemonset.yml
+    kubectl apply -f node-exporter-service.yml
+    ```
+       
+
 
 # To just deploy into your cluster:
    You can follow below steps 3-5
@@ -54,6 +65,7 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
     ```bash
     docker build -t node-exporter-linux-1 .
     ```
+
 2. Tag and Push is to Docker Hub Repository:
 
     ```bash
@@ -85,10 +97,31 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
 
 ## Assumptions
 
-1. Node exporter is used to collect node metrics.
-2. Local Kubernetes setup like Minikube or Kind is being used.
-3. Generated output files are considered essential and retained on pod restarts
-4. Have setup PVC along with Storage class as local Host Storage, the mainifests files are present in kubernetes-cron-job/ directory.
+1. Node exporter is used to collect node metrics. The metrics are collected for CPU, Memory, Disk usage.
+2. The following are the metrics used for collecting from the Node-Exporter-API:
+   **CPU**: node_cpu_seconds_total - >  gives the total number of seconds the CPU has spent in each mode since boot. This metric provides insights into CPU usage over time and is typically broken down into different modes such as user mode, system mode, idle, etc.
+   Here's a breakdown of the different modes typically included in this metric:
+   **user**: Time spent running user space processes.
+   **system**: Time spent running kernel space processes.
+   **idle**: Time spent idle, i.e., the CPU is not doing any work.
+   **nice** (optional): Time spent running niced (lower-priority) user space processes.
+   **iowait** (optional): Time spent waiting for I/O operations to complete.
+   **irq** (optional): Time spent handling hardware interrupts.
+   **softirq** (optional): Time spent handling software interrupts.
+   **steal** (optional): Time spent in other operating systems when running in a virtualized environment.
+   **guest** (optional): Time spent running a virtual CPU for guest operating systems under the control of the Linux kernel.
+
+   **Memory**: node_memory_MemTotal_bytes and node_memory_MemFree_bytes -> 
+   The node_memory_MemTotal_bytes metric provides the total amount of physical RAM installed on the system, measured in bytes. This metric represents the total memory capacity of the system.
+   The node_memory_MemFree_bytes metric, on the other hand, gives the amount of physical RAM currently not being used by the system, also measured in bytes. This metric represents the amount of memory that is available for use without needing to swap to disk.
+
+   **Disk**: node_filesystem_size_bytes and node_filesystem_free_bytes ->
+   The node_filesystem_size_bytes metric provides the total size of the filesystem, typically representing the total storage capacity of the disk or partition where the filesystem resides. This metric is measured in bytes.
+   The node_filesystem_free_bytes metric, on the other hand, indicates the amount of free space available on the filesystem, measured in bytes. It represents the space that is currently not in use and can be utilized for storing data.
+
+3. Local Kubernetes setup like Minikube or Kind is being used. I have used 
+4. Generated output files are considered essential and retained on pod restarts
+5. Have setup PVC along with Storage class as local Host Storage, the mainifests files are present in kubernetes-cron-job/ directory.
 
 ## Future Improvements
 
