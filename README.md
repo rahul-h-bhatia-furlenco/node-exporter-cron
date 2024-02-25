@@ -119,7 +119,7 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
    The node_filesystem_size_bytes metric provides the total size of the filesystem, typically representing the total storage capacity of the disk or partition where the filesystem resides. This metric is measured in bytes.
    The node_filesystem_free_bytes metric, on the other hand, indicates the amount of free space available on the filesystem, measured in bytes. It represents the space that is currently not in use and can be utilized for storing data.
 
-3. Local Kubernetes setup like Minikube or Kind is being used. I have used 
+3. Local Kubernetes setup like Minikube or Kind is being used. I have used Docker Desktop based kubenetes cluster on Macbook    having version v1.29.1
 4. Generated output files are considered essential and retained on pod restarts
 5. Have setup PVC along with Storage class as local Host Storage, the mainifests files are present in kubernetes-cron-job/ directory.
 
