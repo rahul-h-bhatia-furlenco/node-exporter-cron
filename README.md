@@ -18,7 +18,7 @@ Create a Kubernetes cron job that periodically pulls node metrics (CPU, Memory, 
 
 ## Expected Output
 
-1. The program code pulls the metrics and writes them to a file.
+1. The program code pulls the metrics and writes them to a file. This file can be found in the host machine's volume /var/lib/k8s-pvs/data-pvc/pvc-{pvc_id}
 2. Dockerfile to containerize the code.
 3. Kubernetes YAML or Helm Chart.
 4. README file explaining the design, deployment, and other details.
